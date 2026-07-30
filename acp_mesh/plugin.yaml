@@ -1,0 +1,15 @@
+name: acp-mesh
+version: 0.1.0
+description: "Connects this agent to an ACP (Agent Context Protocol) mesh: capability-based discovery and task routing between independently-run agents, with a bootstrap registry standing in for DNS. Outbound tools (acp_resolve/acp_card/acp_send_task) work in any session. Inbound task-handling (acp_pending_tasks/acp_respond_task/acp_reject_task) requires an interactive CLI session and an operator-configured listen_port -- see README.md. Not the same protocol as acp_adapter/'s Agent Client Protocol (editor integration) despite the shared acronym."
+author: "community"
+kind: standalone
+provides_tools:
+  - acp_resolve
+  - acp_card
+  - acp_send_task
+  - acp_pending_tasks
+  - acp_respond_task
+  - acp_reject_task
+hooks:
+  - on_session_start
+  - on_session_end

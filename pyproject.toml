@@ -1,0 +1,45 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "hermes-acp-mesh"
+version = "0.1.0"
+description = "ACP (Agent Context Protocol) plugin for NousResearch's Hermes agent -- capability-based discovery and task routing between independently-run agents."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+    { name = "community" },
+]
+keywords = ["hermes-agent", "acp", "agent-protocol", "multi-agent"]
+dependencies = [
+    "httpx>=0.27",
+]
+
+[project.urls]
+Homepage = "https://github.com/FazGPT/hermes-acp-mesh"
+"Protocol spec" = "https://github.com/FazGPT/acp"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.24",
+]
+
+# This is what makes `pip install hermes-acp-mesh` (or a git-URL install)
+# discoverable by hermes-agent's plugin loader without copying anything into
+# ~/.hermes/plugins/ -- see hermes_cli/plugins.py's _scan_entry_points(),
+# which does importlib.metadata.entry_points().select(group=...) and calls
+# .load() on the match, expecting the loaded object to be a module exposing
+# register(ctx). The manual-copy install path (plugin.yaml under
+# ~/.hermes/plugins/acp_mesh/) keeps working too -- see acp_mesh/plugin.yaml.
+[project.entry-points."hermes_agent.plugins"]
+acp-mesh = "acp_mesh"
+
+[tool.hatch.build.targets.wheel]
+packages = ["acp_mesh"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "strict"
+testpaths = ["tests"]
