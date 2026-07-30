@@ -18,7 +18,7 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/FazGPT/hermes-acp-mesh"
+Homepage = "https://github.com/FazGPT/hermes-agent-2-agent-acp"
 "Protocol spec" = "https://github.com/FazGPT/acp"
 
 [project.optional-dependencies]

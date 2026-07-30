@@ -1,6 +1,6 @@
-# hermes-acp-mesh
+# hermes-agent-2-agent-acp
 
-An **ACP (Agent Context Protocol)** plugin for [NousResearch's Hermes agent](https://github.com/NousResearch/hermes-agent):
+An **ACP (Agent Context Protocol)** plugin (Python package: `hermes-acp-mesh`) for [NousResearch's Hermes agent](https://github.com/NousResearch/hermes-agent):
 capability-based discovery and task routing between independently-run
 agents, with a bootstrap registry standing in for DNS. A Hermes agent
 running this plugin can ask "who on the network can do X?", hand a task
@@ -29,7 +29,7 @@ case: manual copy into `~/.hermes/plugins/`, or a pip / entry-point install.
 **Option A — pip / entry point** (recommended; auto-discovered, no manual copying):
 
 ```bash
-pip install git+https://github.com/FazGPT/hermes-acp-mesh.git
+pip install git+https://github.com/FazGPT/hermes-agent-2-agent-acp.git
 ```
 
 hermes-agent's plugin loader scans `importlib.metadata` entry points in the
@@ -40,8 +40,9 @@ Hermes runs in is enough. No files need to be copied anywhere.
 **Option B — manual copy:**
 
 ```bash
-git clone https://github.com/FazGPT/hermes-acp-mesh.git
-cp -r hermes-acp-mesh/acp_mesh <path-to-hermes-agent-checkout>/plugins/acp_mesh
+git clone https://github.com/FazGPT/hermes-agent-2-agent-acp.git
+cd hermes-agent-2-agent-acp
+cp -r acp_mesh <path-to-hermes-agent-checkout>/plugins/acp_mesh
 pip install httpx   # only external dependency, likely already present
 ```
 
