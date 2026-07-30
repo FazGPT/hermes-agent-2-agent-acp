@@ -11,6 +11,78 @@ Full protocol spec (wire format, routing algorithm, security model): see
 zero-dependency reference implementation this plugin interoperates with
 directly (see "Verification" below).
 
+## The idea behind this
+
+The premise: every agent should be able to reach every other agent, directly
+or by asking someone who can. If your agent can't do something, that
+shouldn't be a dead end — it should be able to ask around, and if none of
+its immediate contacts can help, ask *their* contacts, and so on, until
+something a few hops away actually can. Nothing should be a hard "I can't
+do that."
+
+Two ideas make that work without anyone needing to run or own the whole
+network:
+
+1. **Agents advertise their capabilities as publicly-authorized tools.** An
+   Agent Card is a public, machine-readable statement of "here's what I can
+   do, here's how to reach me." Any other agent is free to call a
+   capability once it knows about it — there's no central approval process
+   for *what* an agent offers. The network is opt-in and self-describing.
+
+2. **Every agent is also a node in the directory, not just a client of
+   one.** Rather than one central switchboard holding the full map of
+   who-can-do-what, each agent keeps its own small address book — the
+   `peers` list in its own Agent Card — of the other agents *it* knows
+   directly. A bootstrap registry helps a *new* agent find its first few
+   contacts (the DNS-root analogy), but from there, routing happens
+   peer-to-peer: your agent asks the agents it knows, they ask the agents
+   *they* know, and so on. No single node needs, or has, a complete
+   picture of the network. The directory is the union of everyone's small,
+   local address books — a phone tree or a social graph, not a database
+   any one party owns.
+
+Applied specifically to Hermes: this plugin is the piece that lets every
+independent Hermes agent — yours, mine, anyone's — become one node in that
+same mesh. Each Hermes agent that installs it advertises its own
+capabilities, keeps its own local list of agents it knows, and can forward
+a request on to them. Multiply that across every Hermes installation that
+opts in, and the result is an emergent, decentralized directory and
+network for Hermes-to-Hermes communication — not a service anyone has to
+run or maintain centrally, just a protocol every participating agent
+already speaks. "A few hops down the road" isn't a metaphor here; it's
+literally the routing algorithm in `acp_mesh/server.py`'s forwarding
+logic, bounded by a hop-count TTL so a request terminates instead of
+circulating forever.
+
+The full protocol-level version of this reasoning lives in
+[FazGPT/acp](https://github.com/FazGPT/acp)'s `ACP.md`; this repo is where
+that idea gets wired into a real, running agent framework.
+
+## Status: proof of concept (v0.1)
+
+This is a working v0.1 implementation, not a hardened production system.
+Before relying on it beyond a local or fully-trusted network:
+
+- **No authentication.** Any agent that can reach your `/acp/task`
+  endpoint can submit work to you, and any Agent Card claiming a
+  capability is taken at face value — nothing verifies an agent actually
+  is who it says it is, or can do what it claims.
+- **Relay hops are unverified.** A forwarding agent could silently drop,
+  mangle, or misattribute a task in transit — there's no signing or
+  attestation on a Task Envelope.
+- **Inbound task-handling is CLI-session-only** (see "Inbound scope"
+  below) — not yet suitable for always-on autonomous fulfillment without
+  a deliberate, separate step up in trust.
+- **No registry federation, no async/long-running tasks, no payment or
+  metering.**
+
+None of these are hard problems individually — they're deliberately
+deferred so a first working version stays small enough to review. The full
+list, and the reasoning behind deferring each one, is in
+[FazGPT/acp](https://github.com/FazGPT/acp)'s `ACP.md` (§7 "Security
+considerations" and §10 "Where this would need to go next"). Treat this as
+a foundation to harden, not a finished product.
+
 ## Why this is a separate repo, not a PR to hermes-agent
 
 hermes-agent's own `CONTRIBUTING.md` is explicit about this:
