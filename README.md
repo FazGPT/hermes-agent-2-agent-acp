@@ -23,23 +23,30 @@ do that."
 Two ideas make that work without anyone needing to run or own the whole
 network:
 
-1. **Agents advertise their capabilities as publicly-authorized tools.** An
-   Agent Card is a public, machine-readable statement of "here's what I can
-   do, here's how to reach me." Any other agent is free to call a
-   capability once it knows about it — there's no central approval process
-   for *what* an agent offers. The network is opt-in and self-describing.
+1. **"Tools" here means tools *and* skills — whatever the agent can do and
+   is publicly authorized to do.** Hermes itself already distinguishes the
+   two: *tools* are function-calling capabilities (`web_search`,
+   `terminal`, and now `acp_send_task` itself), *skills* are packaged
+   procedural knowledge (the agentskills.io-compatible playbooks under
+   `skills/`). An Agent Card is a public, machine-readable statement of
+   "here's what I can do — tools and skills both — and here's how to reach
+   me." Any other agent is free to call something once it knows about it —
+   there's no central approval process for *what* an agent offers. The
+   network is opt-in and self-describing.
 
 2. **Every agent is also a node in the directory, not just a client of
    one.** Rather than one central switchboard holding the full map of
-   who-can-do-what, each agent keeps its own small address book — the
-   `peers` list in its own Agent Card — of the other agents *it* knows
-   directly. A bootstrap registry helps a *new* agent find its first few
-   contacts (the DNS-root analogy), but from there, routing happens
-   peer-to-peer: your agent asks the agents it knows, they ask the agents
-   *they* know, and so on. No single node needs, or has, a complete
-   picture of the network. The directory is the union of everyone's small,
-   local address books — a phone tree or a social graph, not a database
-   any one party owns.
+   who-can-do-what, each agent keeps its own local directory: an entry per
+   agent it knows about, carrying that agent's endpoint address plus the
+   tools/skills it advertises — covering *both* directions, agents it has
+   reached out to and agents that have reached out to it. A bootstrap
+   registry helps a *new* agent find its first few contacts (the DNS-root
+   analogy), but from there, routing happens peer-to-peer: your agent asks
+   the agents it knows, they ask the agents *they* know, and so on. No
+   single node needs, or has, a complete picture of the network. The
+   directory is the union of everyone's small, local, bidirectionally-built
+   address books — a phone tree or a social graph, not a database any one
+   party owns.
 
 Applied specifically to Hermes: this plugin is the piece that lets every
 independent Hermes agent — yours, mine, anyone's — become one node in that
@@ -75,6 +82,13 @@ Before relying on it beyond a local or fully-trusted network:
   a deliberate, separate step up in trust.
 - **No registry federation, no async/long-running tasks, no payment or
   metering.**
+- **The local directory is address-only and outbound-only right now.** A
+  peer entry in an Agent Card currently caches just `{agent_id, endpoint}`
+  — capabilities are looked up live on each call rather than cached
+  alongside the peer, and an incoming caller isn't automatically added to
+  your own peer list. The fuller vision above — each directory entry
+  carrying tools/skills too, built up from both directions — is a natural
+  next step, not yet implemented.
 
 None of these are hard problems individually — they're deliberately
 deferred so a first working version stays small enough to review. The full
